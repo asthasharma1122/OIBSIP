@@ -1,0 +1,73 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import zipfile
+
+# Path to the ZIP file
+zip_path = r"D:\OIBSIP\Task3\car_price.zip"
+
+# List all files inside the ZIP (optional, just to check)
+with zipfile.ZipFile(zip_path, 'r') as z:
+    print("Files in ZIP:", z.namelist())
+
+# Read the CSV from the ZIP
+with zipfile.ZipFile(zip_path, 'r') as z:
+    with z.open("car data.csv") as f:  # make sure the name matches exactly
+        df = pd.read_csv(f)
+
+# Inspect the first few rows
+print(df.head())
+print("\nShape:", df.shape)
+print("\nColumns:", df.columns.tolist())
+print("\nInfo:\n")
+print(df.info())
+print("\nMissing values:\n", df.isnull().sum())
+
+# Remove leading/trailing spaces in column names
+df.columns = df.columns.str.strip()
+
+# Example: Basic EDA
+# 1. Distribution of Selling Price
+plt.figure(figsize=(8,6))
+sns.histplot(df['Selling_Price'], kde=True, bins=30, color='skyblue')
+plt.title("Distribution of Selling Price")
+plt.xlabel("Selling Price (Lakhs)")
+plt.ylabel("Count")
+plt.show()
+
+# 2. Scatter plot: Present Price vs Selling Price
+plt.figure(figsize=(8,6))
+plt.scatter(df['Present_Price'], df['Selling_Price'], alpha=0.6, color='red')
+plt.title("Present Price vs Selling Price")
+plt.xlabel("Present Price (Lakhs)")
+plt.ylabel("Selling Price (Lakhs)")
+plt.show()
+
+# 3. Count plot of Fuel Type
+plt.figure(figsize=(6,4))
+sns.countplot(x='Fuel_Type', data=df, palette='Set2')
+plt.title("Fuel Type Distribution")
+plt.show()
+
+# 4. Count plot of Seller Type
+plt.figure(figsize=(6,4))
+sns.countplot(x='Selling_type', data=df, palette='Set3')
+plt.title("Seller Type Distribution")
+plt.show()
+
+# 5. Count plot of Transmission type
+plt.figure(figsize=(6,4))
+sns.countplot(x='Transmission', data=df, palette='Set1')
+plt.title("Transmission Type Distribution")
+plt.show()
+
+# Example: Feature check
+print("\nUnique values per categorical column:")
+for col in ['Fuel_Type','Selling_type','Transmission','Owner']:
+    print(f"{col}: {df[col].unique()}")
+
+# Convert any necessary columns to numeric (if needed)
+# df['Year'] = pd.to_numeric(df['Year'], errors='coerce')
+
+print("\nData ready for modeling!")
